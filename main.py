@@ -17,7 +17,13 @@ class PassGenk(QWidget):
 
     def initUI(self):
         layout = QVBoxLayout()
-
+        layout.setSpacing(10)
+        
+        # Title
+        title_label = QLabel("PassGenk")
+        title_label.setStyleSheet("font-size: 18px; font-weight: bold;")
+        layout.addWidget(title_label)
+        
         # Password length selection
         length_layout = QHBoxLayout()
         length_label = QLabel("Password Length:")
