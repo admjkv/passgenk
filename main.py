@@ -12,6 +12,7 @@ class PassGenk(QWidget):
         self.setWindowTitle("PassGenk - Password Generator")
         self.setFixedSize(300, 300)
         self.initUI()
+        self.generate_password()
 
     def initUI(self):
         layout = QVBoxLayout()
@@ -35,6 +36,11 @@ class PassGenk(QWidget):
         layout.addWidget(self.include_uppercase)
         layout.addWidget(self.include_digits)
         layout.addWidget(self.include_symbols)
+
+        self.include_uppercase.stateChanged.connect(self.generate_password)
+        self.include_digits.stateChanged.connect(self.generate_password)
+        self.include_symbols.stateChanged.connect(self.generate_password)
+        self.length_spin.valueChanged.connect(self.generate_password)
 
         # Display for generated password
         self.password_display = QLineEdit()
