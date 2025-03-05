@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QPushButton, QSpinBox, QCheckBox
 )
+from PyQt6.QtCore import QTimer
 
 class PassGenk(QWidget):
     def __init__(self):
@@ -53,9 +54,9 @@ class PassGenk(QWidget):
         layout.addWidget(generate_button)
 
         # Copy to clipboard button
-        copy_button = QPushButton("Copy to Clipboard");
-        copy_button.clicked.connect(self.copy_to_clipboard)
-        layout.addWidget(copy_button)
+        self.copy_button = QPushButton("Copy to Clipboard")
+        self.copy_button.clicked.connect(self.copy_to_clipboard)
+        layout.addWidget(self.copy_button)
 
         self.setLayout(layout)
 
@@ -80,7 +81,18 @@ class PassGenk(QWidget):
 
     def copy_to_clipboard(self):
         clipboard = QApplication.clipboard()
-        clipboard.setText(self.password_display.text())
+        password = self.password_display.text()
+        if password and password != "No characters selected":
+            clipboard.setText(password)
+            
+            # Save original text
+            original_text = self.copy_button.text()
+            
+            # Show feedback
+            self.copy_button.setText("Copied!")
+            
+            # Restore original text after a short delay
+            QTimer.singleShot(1000, lambda: self.copy_button.setText(original_text))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
