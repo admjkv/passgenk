@@ -43,6 +43,14 @@ class PassGenk(QWidget):
         self.include_symbols.stateChanged.connect(self.generate_password)
         self.length_spin.valueChanged.connect(self.generate_password)
 
+        # Password strength indicator
+        strength_layout = QHBoxLayout()
+        strength_label = QLabel("Password Strength:")
+        self.strength_display = QLabel("N/A")
+        strength_layout.addWidget(strength_label)
+        strength_layout.addWidget(self.strength_display)
+        layout.addLayout(strength_layout)
+
         # Display for generated password
         self.password_display = QLineEdit()
         self.password_display.setReadOnly(True)
@@ -78,6 +86,43 @@ class PassGenk(QWidget):
 
         password = "".join(random.choice(chars) for _ in range(length))
         self.password_display.setText(password)
+        self.calculate_password_strength(password)
+
+    def calculate_password_strength(self, password):
+        # Simple password strength calculation
+        strength = 0
+        
+        # Length contribution
+        if len(password) >= 8:
+            strength += 1
+        if len(password) >= 12:
+            strength += 1
+        if len(password) >= 16:
+            strength += 1
+            
+        # Character variety contribution
+        if any(c.islower() for c in password):
+            strength += 1
+        if any(c.isupper() for c in password):
+            strength += 1
+        if any(c.isdigit() for c in password):
+            strength += 1
+        if any(c in string.punctuation for c in password):
+            strength += 1
+        
+        # Set strength level and color
+        if strength <= 2:
+            self.strength_display.setText("Weak")
+            self.strength_display.setStyleSheet("color: red;")
+        elif strength <= 4:
+            self.strength_display.setText("Medium")
+            self.strength_display.setStyleSheet("color: orange;")
+        elif strength <= 6:
+            self.strength_display.setText("Strong")
+            self.strength_display.setStyleSheet("color: green;")
+        else:
+            self.strength_display.setText("Very Strong")
+            self.strength_display.setStyleSheet("color: darkgreen;")
 
     def copy_to_clipboard(self):
         clipboard = QApplication.clipboard()
