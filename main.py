@@ -95,40 +95,55 @@ class PassGenk(QWidget):
         self.calculate_password_strength(password)
 
     def calculate_password_strength(self, password):
-        # Simple password strength calculation
+        # Strength calculation
         strength = 0
         
         # Length contribution
-        if len(password) >= 8:
+        length = len(password)
+        if length >= 8:
             strength += 1
-        if len(password) >= 12:
+        if length >= 12:
             strength += 1
-        if len(password) >= 16:
+        if length >= 16:
             strength += 1
-            
+        if length >= 20:
+            strength += 1
+        
         # Character variety contribution
-        if any(c.islower() for c in password):
-            strength += 1
-        if any(c.isupper() for c in password):
-            strength += 1
-        if any(c.isdigit() for c in password):
-            strength += 1
-        if any(c in string.punctuation for c in password):
+        has_lower = any(c.islower() for c in password)
+        has_upper = any(c.isupper() for c in password)
+        has_digit = any(c.isdigit() for c in password)
+        has_symbol = any(c in string.punctuation for c in password)
+        
+        variety_count = sum([has_lower, has_upper, has_digit, has_symbol])
+        strength += variety_count
+        
+        # Check for character distribution
+        char_counts = {}
+        for c in password:
+            if c in char_counts:
+                char_counts[c] += 1
+            else:
+                char_counts[c] = 1
+        
+        # Reward for having unique characters (higher entropy)
+        unique_ratio = len(char_counts) / length
+        if unique_ratio > 0.7:
             strength += 1
         
         # Set strength level and color
-        if strength <= 2:
+        if strength <= 3:
             self.strength_display.setText("Weak")
-            self.strength_display.setStyleSheet("color: red;")
-        elif strength <= 4:
+            self.strength_display.setStyleSheet("color: red; font-weight: bold;")
+        elif strength <= 5:
             self.strength_display.setText("Medium")
-            self.strength_display.setStyleSheet("color: orange;")
-        elif strength <= 6:
+            self.strength_display.setStyleSheet("color: orange; font-weight: bold;")
+        elif strength <= 7:
             self.strength_display.setText("Strong")
-            self.strength_display.setStyleSheet("color: green;")
+            self.strength_display.setStyleSheet("color: green; font-weight: bold;")
         else:
             self.strength_display.setText("Very Strong")
-            self.strength_display.setStyleSheet("color: darkgreen;")
+            self.strength_display.setStyleSheet("color: darkgreen; font-weight: bold;")
 
     def copy_to_clipboard(self):
         clipboard = QApplication.clipboard()
