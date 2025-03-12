@@ -131,6 +131,30 @@ class PassGenk(QWidget):
         if unique_ratio > 0.7:
             strength += 1
         
+        # Check for common patterns
+        consecutive_count = 0
+        previous_char = None
+        has_sequence = False
+        
+        for c in password:
+            if previous_char:
+                if ord(c) == ord(previous_char) + 1:
+                    consecutive_count += 1
+                    if consecutive_count >= 3:
+                        has_sequence = True
+                        break
+                else:
+                    consecutive_count = 0
+            previous_char = c
+            
+        if has_sequence:
+            strength -= 1
+            
+        # Penalize repeated characters
+        repeats = any(count > length * 0.3 for count in char_counts.values())
+        if repeats:
+            strength -= 1
+        
         # Set strength level and color
         if strength <= 3:
             self.strength_display.setText("Weak")
