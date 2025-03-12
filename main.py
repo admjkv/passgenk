@@ -82,11 +82,15 @@ class PassGenk(QWidget):
         
         # Always include lowercase letters as a base
         chars = string.ascii_lowercase
-        if self.include_uppercase.isChecked():
+        use_uppercase = self.include_uppercase.isChecked()
+        use_digits = self.include_digits.isChecked()
+        use_symbols = self.include_symbols.isChecked()
+        
+        if use_uppercase:
             chars += string.ascii_uppercase
-        if self.include_digits.isChecked():
+        if use_digits:
             chars += string.digits
-        if self.include_symbols.isChecked():
+        if use_symbols:
             chars += string.punctuation
             
         # Remove similar looking characters if option is checked
@@ -98,7 +102,37 @@ class PassGenk(QWidget):
             self.password_display.setText("No characters selected")
             return
 
+        # First generate a password randomly
         password = "".join(random.choice(chars) for _ in range(length))
+        
+        # Ensure at least one character from each selected category
+        if length >= 4:  # Only if we have enough length
+            password_list = list(password)
+            position = 0
+            
+            # Ensure lowercase (already guaranteed by default charset)
+            password_list[position] = random.choice(string.ascii_lowercase)
+            position += 1
+            
+            # Ensure uppercase if selected
+            if use_uppercase and position < length:
+                password_list[position] = random.choice(string.ascii_uppercase)
+                position += 1
+                
+            # Ensure digit if selected
+            if use_digits and position < length:
+                password_list[position] = random.choice(string.digits)
+                position += 1
+                
+            # Ensure symbol if selected
+            if use_symbols and position < length:
+                password_list[position] = random.choice(string.punctuation)
+                position += 1
+                
+            # Shuffle the characters to avoid predictable positions
+            random.shuffle(password_list)
+            password = "".join(password_list)
+        
         self.password_display.setText(password)
         self.calculate_password_strength(password)
 
