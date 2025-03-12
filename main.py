@@ -40,13 +40,16 @@ class PassGenk(QWidget):
         self.include_digits = QCheckBox("Include Digits")
         self.include_digits.setChecked(True)
         self.include_symbols = QCheckBox("Include Symbols")
+        self.exclude_similar = QCheckBox("Exclude Similar Characters (1, l, I, 0, O)")
         layout.addWidget(self.include_uppercase)
         layout.addWidget(self.include_digits)
         layout.addWidget(self.include_symbols)
+        layout.addWidget(self.exclude_similar)
 
         self.include_uppercase.stateChanged.connect(self.generate_password)
         self.include_digits.stateChanged.connect(self.generate_password)
         self.include_symbols.stateChanged.connect(self.generate_password)
+        self.exclude_similar.stateChanged.connect(self.generate_password)
         self.length_spin.valueChanged.connect(self.generate_password)
 
         # Password strength indicator
@@ -85,6 +88,11 @@ class PassGenk(QWidget):
             chars += string.digits
         if self.include_symbols.isChecked():
             chars += string.punctuation
+            
+        # Remove similar looking characters if option is checked
+        if self.exclude_similar.isChecked():
+            for char in 'Il1O0o':
+                chars = chars.replace(char, '')
 
         if not chars:
             self.password_display.setText("No characters selected")
