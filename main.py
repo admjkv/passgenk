@@ -157,22 +157,7 @@ class PassGenk(QWidget):
             strength += 1
         
         # Check for common patterns
-        consecutive_count = 0
-        previous_char = None
-        has_sequence = False
-        
-        for c in password:
-            if previous_char:
-                if ord(c) == ord(previous_char) + 1:
-                    consecutive_count += 1
-                    if consecutive_count >= 3:
-                        has_sequence = True
-                        break
-                else:
-                    consecutive_count = 0
-            previous_char = c
-            
-        if has_sequence:
+        if has_sequence(password):
             strength -= 1
             
         # Penalize repeated characters
@@ -208,6 +193,17 @@ class PassGenk(QWidget):
             
             # Restore original text after a short delay
             QTimer.singleShot(1000, lambda: self.copy_button.setText(original_text))
+
+def has_sequence(password, min_length=3):
+    for i in range(len(password) - min_length + 1):
+        is_sequence = True
+        for j in range(i + 1, i + min_length):
+            if ord(password[j]) != ord(password[j-1]) + 1:
+                is_sequence = False
+                break
+        if is_sequence:
+            return True
+    return False
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
