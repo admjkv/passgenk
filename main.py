@@ -95,8 +95,7 @@ class PassGenk(QWidget):
             
         # Remove similar looking characters if option is checked
         if self.exclude_similar.isChecked():
-            for char in 'Il1O0o':
-                chars = chars.replace(char, '')
+            chars = ''.join(c for c in chars if c not in 'Il1O0o')
 
         if not chars:
             self.password_display.setText("No characters selected")
