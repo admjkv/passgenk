@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
     QLabel, QLineEdit, QPushButton, QSpinBox, QCheckBox
 )
 from PyQt6.QtCore import QTimer
+from collections import Counter
 
 class PassGenk(QWidget):
     def __init__(self):
@@ -148,12 +149,7 @@ class PassGenk(QWidget):
         strength += variety_count
         
         # Check for character distribution
-        char_counts = {}
-        for c in password:
-            if c in char_counts:
-                char_counts[c] += 1
-            else:
-                char_counts[c] = 1
+        char_counts = Counter(password)
         
         # Reward for having unique characters (higher entropy)
         unique_ratio = len(char_counts) / length
